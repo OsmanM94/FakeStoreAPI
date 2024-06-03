@@ -15,10 +15,11 @@ struct LoadMore: View {
         Button(action: {
             action()
         }) {
-            Text("Load More")
+            Label("Load more", systemImage: "arrow.clockwise")
+                .foregroundStyle(.blue)
                 .fontWeight(.semibold)
-            
         }
+        .buttonStyle(.plain)
     }
 }
 

@@ -22,7 +22,6 @@ struct JumpToTopButton: View {
                 .fontWeight(.semibold)
         }
         .buttonStyle(.plain)
-        .frame(maxWidth: .infinity, alignment: .center)
     }
 }
 

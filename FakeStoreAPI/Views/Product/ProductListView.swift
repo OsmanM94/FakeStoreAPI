@@ -24,8 +24,20 @@ struct ProductListView: View {
                                 ProductCellLarge(product: product)
                                     .id(product)
                             }
-                            
-                            JumpToTopButton(action: { proxy.scrollTo(productVM.products.first) })
+                            HStack(spacing: 10) {
+                                JumpToTopButton(action: { proxy.scrollTo(productVM.products.first) })
+                                Text("or")
+                                LoadMore(action: {
+                                    Task {
+                                        await productVM.loadMore()
+                                    }
+                                })
+                                .disabled(!productVM.canLoadMorePages)
+                            }
+                           
+                        }
+                        .refreshable {
+                            await productVM.fetchProducts(page: 1)
                         }
                         .overlay(alignment: .center) {
                             if productVM.isLoading {
@@ -39,25 +51,6 @@ struct ProductListView: View {
                 }
             }
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    HStack(spacing: 10) {
-                        NextPageButton(action: {
-                            Task {
-                                await productVM.fetchPreviousPage()
-                            }
-                        }, systemName: "chevron.left")
-                        .disabled(productVM.currentPage <= 1)
-                        
-                        Text("Page \(productVM.currentPage)")
-                        
-                        NextPageButton(action: {
-                            Task {
-                                await productVM.fetchNextPage()
-                            }
-                        }, systemName: "chevron.right")
-                        .disabled(!productVM.canLoadMorePages)
-                    }
-                }
                 ToolbarItem(placement: .confirmationAction) {
                     NavigationLink {
                         CartView()
@@ -81,7 +74,7 @@ struct ProductListView: View {
             .searchable(text: Bindable(productVM).searchProduct)
         }
         .task {
-            await productVM.fetchProducts(page: 1)
+            await productVM.refreshData()
         }
     }
 }

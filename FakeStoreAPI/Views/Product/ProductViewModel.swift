@@ -37,7 +37,6 @@ final class ProductViewModel {
         guard !isLoading else { return }
         isLoading = true
         do {
-//            print("DEBUG: Fetching products for page \(page)")
             let newProducts = try await service.fetchProducts(page: page, limit: pageSize)
             products.append(contentsOf: newProducts)
             canLoadMorePages = !newProducts.isEmpty
@@ -49,38 +48,17 @@ final class ProductViewModel {
         isLoading = false
     }
     
-    @MainActor
-    func refreshData() async {
-           isLoading = true
-           products = []
-           currentPage = 1
-           canLoadMorePages = true
-           await fetchProducts(page: 1) 
-           isLoading = false
-       }
-    
-    @MainActor
-    func fetchNextPage() async {
+    func loadMore() async {
         await fetchProducts(page: currentPage + 1)
     }
     
     @MainActor
-    func fetchPreviousPage() async {
-        guard currentPage > 1 else { return }
-        await fetchProducts(page: currentPage - 1)
+    func refreshData() async {
+        currentPage = 1
+        canLoadMorePages = true
+        products.removeAll()
+        await fetchProducts(page: 1)
     }
-    
-//    @MainActor
-//    func testFetchProducts() async {
-//        print("DEBUG: Fetching products for the first time...")
-//        await fetchProducts(page: 1)
-//        
-//        currentPage = 1
-//        
-//        print("DEBUG: Fetching products again to test cache...")
-//        await fetchProducts(page: 1)
-//    }
-
 }
 
 
