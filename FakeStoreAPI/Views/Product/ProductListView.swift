@@ -12,48 +12,79 @@ struct ProductListView: View {
     @Environment(ProductViewModel.self) private var productVM
     @Environment(CartViewModel.self) private var cartVM
     
+    @State private var isActive: Bool = false
+    
     var body: some View {
         NavigationStack {
-            if productVM.products.isEmpty {
-                ProgressView()
-            } else {
+            Group {
                 ScrollViewReader { proxy in
-                    List {
-                        ForEach(productVM.filteredProducts, id: \.id) { product in
-                            ProductCellLarge(product: product)
-                                .id(product)
-                                .onAppear {
-                                    if product == productVM.products.last {
-                                        print("DEBUG: Paginate here...")
-                                    }
-                                }
+                    if isActive {
+                        List {
+                            ForEach(productVM.filteredProducts, id: \.id) { product in
+                                ProductCellLarge(product: product)
+                                    .id(product)
+                            }
+                            
+                            JumpToTopButton(action: { proxy.scrollTo(productVM.products.first) })
                         }
-                        JumpToTopButton(action: { proxy.scrollTo(productVM.products.first) })
-                    }
-                    .navigationTitle("Products")
-                    .searchable(text: Bindable(productVM).searchProduct)
-                    .refreshable {
-                        await productVM.fetchProducts()
-                    }
-                    .toolbar {
-                        ToolbarItem(placement: .confirmationAction) {
-                            NavigationLink {
-                                CartView()
-                            } label: {
-                                CartNavigation(numberOfProducts: cartVM.products.count)
+                        .overlay(alignment: .center) {
+                            if productVM.isLoading {
+                                ProgressView()
                             }
                         }
-                    }
-                    .buttonStyle(.plain)
+                    } else {
+                       ProgressView()
+                           .transition(.opacity)
+                   }
                 }
             }
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    HStack(spacing: 10) {
+                        NextPageButton(action: {
+                            Task {
+                                await productVM.fetchPreviousPage()
+                            }
+                        }, systemName: "chevron.left")
+                        .disabled(productVM.currentPage <= 1)
+                        
+                        Text("Page \(productVM.currentPage)")
+                        
+                        NextPageButton(action: {
+                            Task {
+                                await productVM.fetchNextPage()
+                            }
+                        }, systemName: "chevron.right")
+                        .disabled(!productVM.canLoadMorePages)
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    NavigationLink {
+                        CartView()
+                    } label: {
+                        CartNavigation(numberOfProducts: cartVM.products.count)
+                    }
+                }
+            }
+            .onAppear() {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    withAnimation(.easeInOut(duration: 1.0)) {
+                        isActive = true
+                    }
+                }
+            }
+            .onDisappear {
+                isActive = false
+            }
+            .buttonStyle(.plain)
+            .navigationTitle("Products")
+            .searchable(text: Bindable(productVM).searchProduct)
         }
         .task {
-            await productVM.fetchProducts()
+            await productVM.fetchProducts(page: 1)
         }
     }
 }
-
 #Preview {
     ProductListView()
         .environment(ProductViewModel(service: ProductDataService()))
