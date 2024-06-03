@@ -14,14 +14,14 @@ struct CartView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if cartViewModel.products.count > 0 {
+                if cartViewModel.cartItems.count > 0 {
                     List {
-                        ForEach(cartViewModel.products, id: \.id) { product in
-                            ProductCellSmall(product: product)
+                        ForEach(cartViewModel.cartItems, id: \.product.id) { item in
+                            ProductCellSmall(product: item)
                                 .swipeActions(allowsFullSwipe: false) {
                                     Button(role: .destructive) {
                                         withAnimation {
-                                            cartViewModel.removeFromCart(product: product)
+                                            cartViewModel.removeFromCart(product: item.product)
                                         }
                                     } label: {
                                         Image(systemName: "trash")
@@ -60,12 +60,6 @@ struct CartView: View {
                         Label("No products added", systemImage: "tray.fill")
                     }, description: {
                         Text("Start adding products today.")
-                    }, actions: {
-                        NavigationLink {
-                            ProductListView()
-                        } label: {
-                            Text("Shop")
-                        }
                     })
                 }
             }
@@ -78,3 +72,5 @@ struct CartView: View {
     CartView()
         .environment(CartViewModel())
 }
+
+

@@ -33,12 +33,17 @@ final class ProductViewModel {
     }
     
     @MainActor
-    func fetchProducts(page: Int) async {
+    func fetchProducts(page: Int, useCache: Bool = true) async {
         guard !isLoading else { return }
         isLoading = true
         do {
-            let newProducts = try await service.fetchProducts(page: page, limit: pageSize)
-            products.append(contentsOf: newProducts)
+            let newProducts = try await service.fetchProducts(page: page, limit: pageSize, useCache: useCache)
+            
+            let newUniqueProducts = newProducts.filter { newProduct in
+                !products.contains(where: { $0.id == newProduct.id })
+            }
+            products.append(contentsOf: newUniqueProducts)
+    
             canLoadMorePages = !newProducts.isEmpty
             currentPage = page
         } catch {
@@ -48,7 +53,9 @@ final class ProductViewModel {
         isLoading = false
     }
     
+    @MainActor
     func loadMore() async {
+        pageSize += 1
         await fetchProducts(page: currentPage + 1)
     }
     
@@ -56,8 +63,9 @@ final class ProductViewModel {
     func refreshData() async {
         currentPage = 1
         canLoadMorePages = true
+        pageSize = 2
         products.removeAll()
-        await fetchProducts(page: 1)
+        await fetchProducts(page: currentPage + 1, useCache: false)
     }
 }
 

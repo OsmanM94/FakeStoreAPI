@@ -9,11 +9,13 @@ import SwiftUI
 
 struct ProductCellSmall: View {
     
-    let product: Product
+    @Environment(CartViewModel.self) private var cartViewModel
     
+    let product: CartItem
+
     var body: some View {
         HStack(spacing: 20) {
-            AsyncImage(url: product.image) { image in
+            AsyncImage(url: product.product.image) { image in
                 image
                     .resizable()
                     .scaledToFit()
@@ -24,11 +26,19 @@ struct ProductCellSmall: View {
             }
             
             VStack(alignment: .leading, spacing: 10) {
-                Text(product.title)
+                Text(product.product.title)
                     .italic()
-                Text("\(product.price, format: .currency(code: "GBP"))")
+                Text("\(product.product.price, format: .currency(code: "GBP"))")
                     .font(.title3)
                     .fontWeight(.semibold)
+                Stepper("Q: \(product.quantity)", value: Binding(
+                    get: { product.quantity },
+                    set: { newQuantity in
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            cartViewModel.updateQuantity(for: product.product, quantity: newQuantity)
+                        }
+                    }
+                ), in: 1...10)
             }
         }
         .padding(.horizontal)
@@ -37,5 +47,6 @@ struct ProductCellSmall: View {
 }
 
 #Preview {
-    ProductCellSmall(product: Product.sampleData[0])
+    ProductCellSmall(product: CartItem(product: Product.sampleData[0], quantity: 1))
+        .environment(CartViewModel())
 }

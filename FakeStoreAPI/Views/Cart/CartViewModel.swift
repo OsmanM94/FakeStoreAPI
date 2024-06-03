@@ -7,35 +7,50 @@
 
 import Foundation
 
+
 @Observable
 final class CartViewModel {
-    private(set) var products = [Product]()
+    private(set) var cartItems = [CartItem]()
     private(set) var total: Double = 0
     private(set) var nextDayPrice: Double = 4.99
     private(set) var vatRate: Double = 0.2
-   
+    var quantity: Int = 1
+    
     var nextDayService: Bool = false {
         didSet {
-           updateTotalForNextDayService()
-            
+            updateTotalForNextDayService()
         }
     }
-
+    
     func addToCart(product: Product) {
-        products.append(product)
-        total += product.price
-        total += product.price * vatRate
+        if let index = cartItems.firstIndex(where: { $0.product.id == product.id }) {
+            cartItems[index].quantity += 1
+        } else {
+            let newItem = CartItem(product: product, quantity: 1)
+            cartItems.append(newItem)
+        }
+        updateTotal()
     }
     
     func removeFromCart(product: Product) {
-        if let index = products.firstIndex(where: { $0.id == product.id }) {
-            products.remove(at: index)
-            total -= product.price
-            total -= product.price * vatRate
-            
-            if nextDayService {
-                total = products.reduce(0) { $0 + $1.price } * (1 + vatRate) + nextDayPrice
-            }
+        if let index = cartItems.firstIndex(where: { $0.product.id == product.id }) {
+            cartItems.remove(at: index)
+        }
+        updateTotal()
+    }
+    
+    func updateQuantity(for product: Product, quantity: Int) {
+        if let index = cartItems.firstIndex(where: { $0.product.id == product.id }) {
+            cartItems[index].quantity = quantity
+            updateTotal()
+        }
+    }
+    
+    private func updateTotal() {
+        total = cartItems.reduce(0) { $0 + ($1.product.price * Double($1.quantity)) }
+        total += total * vatRate
+        if nextDayService {
+            total += nextDayPrice
         }
     }
     
@@ -46,6 +61,5 @@ final class CartViewModel {
             total -= nextDayPrice
         }
     }
-    
 }
 

@@ -8,7 +8,7 @@
 import Foundation
 
 protocol ProductServiceProtocol {
-    func fetchProducts(page: Int, limit: Int) async throws -> [Product]
+    func fetchProducts(page: Int, limit: Int, useCache: Bool) async throws -> [Product]
     func createProduct(_ product: Product) async throws -> Product
 }
 
@@ -20,11 +20,11 @@ class ProductDataService: ProductServiceProtocol, HTTPDataDownloader {
      private let endPoint = "https://fakestoreapi.com/products"
      private let cacheKey = "productsCacheKey"
     
-    func fetchProducts(page: Int, limit: Int) async throws -> [Product] {
+    func fetchProducts(page: Int, limit: Int, useCache: Bool) async throws -> [Product] {
        
         let cacheKey = "\(cacheKey)_page_\(page)_limit_\(limit)"
         
-        if let cachedProducts = ProductsCache.shared.get(forKey: cacheKey) {
+        if useCache, let cachedProducts = ProductsCache.shared.get(forKey: cacheKey) {
             print("DEBUG: Got data from Cache.")
             return cachedProducts
         }

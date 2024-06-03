@@ -2,12 +2,12 @@
 //  PageButton.swift
 //  FakeStoreAPI
 //
-//  Created by asia on 03/06/2024.
+//  Created by Osman M. on 03/06/2024.
 //
 
 import SwiftUI
 
-struct LoadMore: View {
+struct LoadMoreButton: View {
     
     let action: () -> Void
     
@@ -15,7 +15,7 @@ struct LoadMore: View {
         Button(action: {
             action()
         }) {
-            Label("Load more", systemImage: "arrow.clockwise")
+            Text("Load more")
                 .foregroundStyle(.blue)
                 .fontWeight(.semibold)
         }
@@ -24,5 +24,5 @@ struct LoadMore: View {
 }
 
 #Preview {
-    LoadMore(action: {})
+    LoadMoreButton(action: {})
 }

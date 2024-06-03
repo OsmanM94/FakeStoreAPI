@@ -24,38 +24,38 @@ struct ProductListView: View {
                                 ProductCellLarge(product: product)
                                     .id(product)
                             }
-                            HStack(spacing: 10) {
-                                JumpToTopButton(action: { proxy.scrollTo(productVM.products.first) })
-                                Text("or")
-                                LoadMore(action: {
-                                    Task {
-                                        await productVM.loadMore()
-                                    }
-                                })
-                                .disabled(!productVM.canLoadMorePages)
-                            }
-                           
+                            LoadMoreButton(action: {
+                                Task {
+                                    await productVM.loadMore()
+                                }
+                            })
+                            .disabled(!productVM.canLoadMorePages)
+                            .frame(maxWidth: .infinity, alignment: .center)
                         }
                         .refreshable {
-                            await productVM.fetchProducts(page: 1)
+                            await productVM.refreshData()
                         }
                         .overlay(alignment: .center) {
                             if productVM.isLoading {
                                 ProgressView()
                             }
                         }
-                    } else {
-                       ProgressView()
-                           .transition(.opacity)
-                   }
-                }
-            }
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    NavigationLink {
-                        CartView()
-                    } label: {
-                        CartNavigation(numberOfProducts: cartVM.products.count)
+                        .toolbar {
+                            ToolbarItem(placement: .confirmationAction) {
+                                NavigationLink {
+                                    CartView()
+                                } label: {
+                                    CartNavigation(numberOfProducts: cartVM.cartItems.count)
+                                }
+                            }
+                            ToolbarItem(placement: .topBarTrailing) {
+                                JumpToTopButton(action: { proxy.scrollTo(productVM.products.first) })
+                            }
+                        }
+                    }
+                    else {
+                        ProgressView()
+                            .transition(.opacity)
                     }
                 }
             }
@@ -74,7 +74,7 @@ struct ProductListView: View {
             .searchable(text: Bindable(productVM).searchProduct)
         }
         .task {
-            await productVM.refreshData()
+            await productVM.fetchProducts(page: productVM.currentPage)
         }
     }
 }
