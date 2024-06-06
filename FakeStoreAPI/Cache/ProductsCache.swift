@@ -18,20 +18,15 @@ class ProductsCache {
     
     func set(_ products: [Product], forKey key: String) {
         guard let data = try? JSONEncoder().encode(products) else {
-//            print("DEBUG: Failed to encode products for caching")
             return
         }
         cache.setObject(data as NSData, forKey: key as NSString)
-//        print("DEBUG: Cached products with key: \(key)")
     }
     
     func get(forKey key: String) -> [Product]? {
-        guard let data = cache.object(forKey: key as NSString) as Data? else { 
-//            print("DEBUG: No cached data found for key: \(key)")
+        guard let data = cache.object(forKey: key as NSString) as Data? else {
             return nil
         }
-//        print("DEBUG: Successfully retrieved cached products for key: \(key)")
         return try? JSONDecoder().decode([Product].self, from: data)
-      
     }
 }

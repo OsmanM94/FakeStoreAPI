@@ -12,13 +12,14 @@ import Foundation
 final class ProductViewModel {
     private(set) var products = [Product]()
     private(set) var errorMessage: String?
-    private(set) var isLoading: Bool = false
+    var isLoading: Bool = false
     var searchProduct: String = ""
+    var isFavorite: Bool = false
     
     private(set) var currentPage: Int = 1
-    private(set) var pageSize: Int = 2
+    private(set) var pageSize: Int = 10
     private(set) var canLoadMorePages: Bool = true
-    
+   
     var filteredProducts: [Product] {
         guard !searchProduct.isEmpty else { return products }
         return products.filter { product in
@@ -43,9 +44,15 @@ final class ProductViewModel {
                 !products.contains(where: { $0.id == newProduct.id })
             }
             products.append(contentsOf: newUniqueProducts)
-    
-            canLoadMorePages = !newProducts.isEmpty
+            
+            if products.count >= 20  {
+                canLoadMorePages = false
+            } else {
+                canLoadMorePages = true
+            }
+            
             currentPage = page
+            
         } catch {
             guard let error = error as? APIError else { return }
             self.errorMessage = error.customDescription
@@ -55,7 +62,7 @@ final class ProductViewModel {
     
     @MainActor
     func loadMore() async {
-        pageSize += 1
+        pageSize += 10
         await fetchProducts(page: currentPage + 1)
     }
     
@@ -63,10 +70,9 @@ final class ProductViewModel {
     func refreshData() async {
         currentPage = 1
         canLoadMorePages = true
-        pageSize = 2
+        pageSize = 10
         products.removeAll()
         await fetchProducts(page: currentPage + 1, useCache: false)
     }
+    
 }
-
-

@@ -24,10 +24,10 @@ class ProductDataService: ProductServiceProtocol, HTTPDataDownloader {
        
         let cacheKey = "\(cacheKey)_page_\(page)_limit_\(limit)"
         
-        if useCache, let cachedProducts = ProductsCache.shared.get(forKey: cacheKey) {
-            print("DEBUG: Got data from Cache.")
-            return cachedProducts
-        }
+//        if useCache, let cachedProducts = ProductsCache.shared.get(forKey: cacheKey) {
+//            print("DEBUG: Got data from Cache.")
+//            return cachedProducts
+//        }
      
         let paginatedEndPoint = "\(endPoint)?limit=\(limit)&page=\(page)"
         

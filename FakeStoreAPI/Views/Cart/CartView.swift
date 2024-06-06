@@ -2,7 +2,7 @@
 //  CartListView.swift
 //  FakeStoreAPI
 //
-//  Created by asia on 31/05/2024.
+//  Created by Osman M. on 31/05/2024.
 //
 
 import SwiftUI
@@ -17,7 +17,7 @@ struct CartView: View {
                 if cartViewModel.cartItems.count > 0 {
                     List {
                         ForEach(cartViewModel.cartItems, id: \.product.id) { item in
-                            ProductCellSmall(product: item)
+                            CartCell(cartItem: item)
                                 .swipeActions(allowsFullSwipe: false) {
                                     Button(role: .destructive) {
                                         withAnimation {
@@ -54,6 +54,19 @@ struct CartView: View {
                         }
                     }
                     .listStyle(.plain)
+                    
+                    VStack(spacing: 0) {
+                        Button(action: {}) {
+                            Text("Proceed to Payment")
+                                .foregroundStyle(.white)
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    .controlSize(.large)
+                    .buttonBorderShape(.roundedRectangle(radius: 10))
+                    .buttonStyle(.borderedProminent)
+                    .padding([.horizontal, .bottom])
                     
                 } else {
                     ContentUnavailableView(label: {

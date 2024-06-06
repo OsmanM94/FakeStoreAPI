@@ -12,12 +12,14 @@ struct FakeStoreAPIApp: App {
     
     @State private var productViewModel = ProductViewModel(service: ProductDataService())
     @State private var cartViewModel = CartViewModel()
-   
+    @State private var favoritesViewModel = FavoritesViewModel()
+    
     var body: some Scene {
         WindowGroup {
             Tab()
                 .environment(productViewModel)
                 .environment(cartViewModel)
+                .environment(favoritesViewModel)
         }
     }  
 }

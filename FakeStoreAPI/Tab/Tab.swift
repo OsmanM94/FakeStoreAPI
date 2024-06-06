@@ -2,7 +2,7 @@
 //  Tab.swift
 //  FakeStoreAPI
 //
-//  Created by asia on 31/05/2024.
+//  Created by Osman M. on 31/05/2024.
 //
 
 import SwiftUI
@@ -19,11 +19,18 @@ struct Tab: View {
                 }
                 .tag(0)
             
-            AccountView()
+            FavoriteView()
                 .tabItem {
-                    Label("Account", systemImage: "gearshape.fill")
+                    Label("Wishlist", systemImage: "heart.fill")
                 }
                 .tag(1)
+            
+            AccountView()
+                .tabItem {
+                    Label("Account", systemImage: "person.fill")
+                }
+                .tag(2)
+            
         }
     }
 }
@@ -32,4 +39,5 @@ struct Tab: View {
     Tab()
         .environment(ProductViewModel(service: MockDataService()))
         .environment(CartViewModel())
+        .environment(FavoritesViewModel())
 }

@@ -10,19 +10,25 @@ import SwiftUI
 struct LoadMoreButton: View {
     
     let action: () -> Void
+    @Binding var isLoading: Bool
     
     var body: some View {
         Button(action: {
             action()
         }) {
-            Text("Load more")
-                .foregroundStyle(.blue)
-                .fontWeight(.semibold)
+            if isLoading {
+                ProgressView()
+                    .scaleEffect(1)
+            } else {
+                Text("Load more")
+                    .foregroundStyle(.blue)
+                    .fontWeight(.semibold)
+            }
         }
         .buttonStyle(.plain)
     }
 }
 
 #Preview {
-    LoadMoreButton(action: {})
+    LoadMoreButton(action: {}, isLoading: .constant(false))
 }

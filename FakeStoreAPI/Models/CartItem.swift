@@ -2,7 +2,7 @@
 //  CartItem.swift
 //  FakeStoreAPI
 //
-//  Created by asia on 03/06/2024.
+//  Created by Osman M. on 03/06/2024.
 //
 
 import Foundation

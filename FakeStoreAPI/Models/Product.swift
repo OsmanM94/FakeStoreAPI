@@ -2,7 +2,7 @@
 //  Store.swift
 //  FakeStoreAPI
 //
-//  Created by asia on 30/05/2024.
+//  Created by Osman M. on 30/05/2024.
 //
 
 import Foundation
@@ -12,7 +12,7 @@ struct Product: Identifiable, Codable, Hashable, Equatable {
     let title: String
     let price: Double
     let description: String
-    let category: String
+    var category: String
     let image: URL
     
     static func ==(lhs: Product, rhs: Product) -> Bool {
@@ -21,6 +21,7 @@ struct Product: Identifiable, Codable, Hashable, Equatable {
     func hash(into hasher: inout Hasher) {
            hasher.combine(id)
        }
+    
 }
 
 extension Product {

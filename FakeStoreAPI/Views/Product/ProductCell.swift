@@ -7,22 +7,25 @@
 
 import SwiftUI
 
-struct ProductCellLarge: View {
+struct ProductCell: View {
     
     let product: Product
-   
+  
     var body: some View {
         VStack(spacing: 25) {
+            
+//            ImageLoader(url: product.image, contentMode: .fit)
+//                .frame(height: 300)
+            
             AsyncImage(url: product.image) { image in
                 image
                     .resizable()
                     .scaledToFit()
-                    .frame(height: 300)
             } placeholder: {
                 ProgressView()
-                    .frame(height: 350)
             }
-            
+            .frame(height: 300)
+
             Text(product.title)
                 .italic()
                 .frame(maxWidth:.infinity, alignment: .leading)
@@ -33,14 +36,18 @@ struct ProductCellLarge: View {
                     .fontWeight(.semibold)
                 
                 Spacer(minLength: 0)
-
+                
                 AddToCartButton(product: product)
             }
+        }
+        .overlay(alignment: .topTrailing) {
+           AddToFavoriteButton(product: product)
         }
     }
 }
 
 #Preview {
-    ProductCellLarge(product: Product.sampleData[0])
+    ProductCell(product: Product.sampleData[0])
         .environment(CartViewModel())
+        .environment(FavoritesViewModel())
 }

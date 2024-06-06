@@ -21,23 +21,24 @@ struct ProductListView: View {
                     if isActive {
                         List {
                             ForEach(productVM.filteredProducts, id: \.id) { product in
-                                ProductCellLarge(product: product)
+                                ProductCell(product: product)
                                     .id(product)
                             }
                             LoadMoreButton(action: {
                                 Task {
                                     await productVM.loadMore()
                                 }
-                            })
-                            .disabled(!productVM.canLoadMorePages)
+                            }, isLoading: Bindable(productVM).isLoading)
+                            .disabled(!productVM.canLoadMorePages || productVM.isLoading)
                             .frame(maxWidth: .infinity, alignment: .center)
                         }
                         .refreshable {
                             await productVM.refreshData()
                         }
-                        .overlay(alignment: .center) {
+                        .overlay {
                             if productVM.isLoading {
                                 ProgressView()
+                                    .scaleEffect(1.5)
                             }
                         }
                         .toolbar {
@@ -55,31 +56,31 @@ struct ProductListView: View {
                     }
                     else {
                         ProgressView()
-                            .transition(.opacity)
+                            .scaleEffect(1.5)
                     }
                 }
             }
             .onAppear() {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    withAnimation(.easeInOut(duration: 1.0)) {
-                        isActive = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                       isActive = true
                     }
                 }
             }
-            .onDisappear {
-                isActive = false
-            }
             .buttonStyle(.plain)
             .navigationTitle("Products")
-            .searchable(text: Bindable(productVM).searchProduct)
+            .searchable(text: Bindable(productVM).searchProduct, placement: .navigationBarDrawer(displayMode: .always))
         }
         .task {
             await productVM.fetchProducts(page: productVM.currentPage)
         }
     }
 }
+
 #Preview {
     ProductListView()
         .environment(ProductViewModel(service: ProductDataService()))
         .environment(CartViewModel())
+        .environment(FavoritesViewModel())
 }
+
