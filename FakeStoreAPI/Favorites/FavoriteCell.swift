@@ -23,7 +23,6 @@ struct FavoriteCell: View {
                 Text("\(favoriteProduct.product.price, format: .currency(code: "GBP"))")
                     .font(.title3)
                     .fontWeight(.semibold)
-                AddToCartButton(product: favoriteProduct.product)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }

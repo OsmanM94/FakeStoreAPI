@@ -8,14 +8,16 @@
 import Foundation
 
 
+
 @Observable
 class FavoritesViewModel {
     var favorite = [FavoriteProduct]()
-    
+    var cartViewModel: CartViewModel?
 
     func addToFavorites(product: Product) {
         if let index = favorite.firstIndex(where: { $0.product.id == product.id }) {
             favorite.remove(at: index)
+            cartViewModel?.removeFromCart(product: product)
         } else {
             let favoriteProduct = FavoriteProduct(product: product)
             favorite.append(favoriteProduct)
@@ -25,6 +27,7 @@ class FavoritesViewModel {
     func removeFromFavorites(product: Product) {
         if let index = favorite.firstIndex(where: { $0.product.id == product.id }) {
             favorite.remove(at: index)
+            cartViewModel?.removeFromCart(product: product)
         }
     }
     

@@ -33,7 +33,21 @@ struct ProductListView: View {
                             .frame(maxWidth: .infinity, alignment: .center)
                         }
                         .refreshable {
-                            await productVM.refreshData()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                withAnimation(.easeInOut(duration: 0.5)) {
+                                   isActive = false
+                                }
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                       Task {
+                                           await productVM.refreshData()
+                                           DispatchQueue.main.async {
+                                               withAnimation {
+                                                   isActive = true
+                                               }
+                                           }
+                                       }
+                                   }
                         }
                         .overlay {
                             if productVM.isLoading {

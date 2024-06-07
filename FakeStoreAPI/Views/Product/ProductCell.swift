@@ -14,17 +14,17 @@ struct ProductCell: View {
     var body: some View {
         VStack(spacing: 25) {
             
-//            ImageLoader(url: product.image, contentMode: .fit)
-//                .frame(height: 300)
+            ImageLoader(url: product.image, contentMode: .fit)
+                .frame(height: 300)
             
-            AsyncImage(url: product.image) { image in
-                image
-                    .resizable()
-                    .scaledToFit()
-            } placeholder: {
-                ProgressView()
-            }
-            .frame(height: 300)
+//            AsyncImage(url: product.image) { image in
+//                image
+//                    .resizable()
+//                    .scaledToFit()
+//            } placeholder: {
+//                ProgressView()
+//            }
+//            .frame(height: 300)
 
             Text(product.title)
                 .italic()

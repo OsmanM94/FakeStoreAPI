@@ -19,6 +19,8 @@ final class ProductViewModel {
     private(set) var currentPage: Int = 1
     private(set) var pageSize: Int = 10
     private(set) var canLoadMorePages: Bool = true
+    private var lastRefreshTime: Date? = nil
+    private let refreshCooldown: TimeInterval = 30
    
     var filteredProducts: [Product] {
         guard !searchProduct.isEmpty else { return products }
@@ -68,11 +70,19 @@ final class ProductViewModel {
     
     @MainActor
     func refreshData() async {
+        if let lastRefreshTime = lastRefreshTime {
+            let timeSinceLastRefresh = Date().timeIntervalSince(lastRefreshTime)
+            if timeSinceLastRefresh < refreshCooldown {
+                return
+            }
+        }
         currentPage = 1
         canLoadMorePages = true
         pageSize = 10
         products.removeAll()
         await fetchProducts(page: currentPage + 1, useCache: false)
+        
+        lastRefreshTime = Date()
     }
     
 }
